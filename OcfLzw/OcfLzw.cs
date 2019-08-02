@@ -98,7 +98,7 @@ namespace OcfLzw
                 {
                     break;
                 }
-                
+
                 // Do our reset
                 if (nextCommand == CLEAR_TABLE)
                 {
@@ -114,38 +114,40 @@ namespace OcfLzw
                         data = dic.GetData(nextCommand);
                         dic.Clearbuffer(); // clear buffer
                     }
-                    if (data == null)
+                    if (data != null)
                     {
-                        throw new Exception("Error: data is null");
-                    }
 
-                    dic.Visit(data);
 
-                    if (dic.GetNextCode() >= 2047)
-                    {
-                        input.BitsInChunk = 12;
-                    }
-                    else if (dic.GetNextCode() >= 1023)
-                    {
-                        input.BitsInChunk = 11;
-                    }
-                    else if (dic.GetNextCode() >= 511)
-                    {
-                        input.BitsInChunk = 10;
+                        dic.Visit(data);
+
+                        if (dic.GetNextCode() >= 2047)
+                        {
+                            input.BitsInChunk = 12;
+                        }
+                        else if (dic.GetNextCode() >= 1023)
+                        {
+                            input.BitsInChunk = 11;
+                        }
+                        else if (dic.GetNextCode() >= 511)
+                        {
+                            input.BitsInChunk = 10;
+                        }
+                        else
+                        {
+                            input.BitsInChunk = 9;
+                        }
+
+                        firstByte = data[0];
+                        output.Write(data, 0, data.Length);
                     }
                     else
                     {
-                        input.BitsInChunk = 9;
+                        //throw new Exception("Error: data is null");
                     }
-
-                    firstByte = data[0];
-                    output.Write(data, 0, data.Length);
                 }
-                
+                output.Flush();
+
             }
-            output.Flush();
-            
-            
         }
 
     }
